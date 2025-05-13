@@ -6,6 +6,9 @@ public class input{
     public static void p(Object o) {
         System.out.println(o);
     }
+     public static void ponly(Object o) {
+        System.out.print(o);
+    }
     /******************************************************* */
     public static void main(String[] args){
             

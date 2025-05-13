@@ -31,10 +31,10 @@ public class data_type{
         float f = 5.6f;
         double d1 =4.666D;
         boolean  a = true;
-        p(!a);
- p(aga);
- String str = "jesan";
-  p(str);
-
+//         p(!a);
+//  p(aga);
+//  String str = "jesan";
+//   p(str);
+p(d1);
     }
 }
