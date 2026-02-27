@@ -1,0 +1,1307 @@
+//model
+// RoomType.java
+package model;
+
+public enum RoomType {
+    SINGLE("Single Room", 1, 100.0),
+    DOUBLE("Double Room", 2, 150.0),
+    TWIN("Twin Room", 2, 160.0),
+    DELUXE("Deluxe Room", 2, 200.0),
+    EXECUTIVE("Executive Room", 2, 250.0),
+    JUNIOR_SUITE("Junior Suite", 3, 300.0),
+    SUITE("Suite", 4, 400.0),
+    PRESIDENTIAL_SUITE("Presidential Suite", 6, 1000.0);
+    
+    private final String displayName;
+    private final int capacity;
+    private final double basePrice;
+    
+    RoomType(String displayName, int capacity, double basePrice) {
+        this.displayName = displayName;
+        this.capacity = capacity;
+        this.basePrice = basePrice;
+    }
+    
+    public String getDisplayName() {
+        return displayName;
+    }
+    
+    public int getCapacity() {
+        return capacity;
+    }
+    
+    public double getBasePrice() {
+        return basePrice;
+    }
+    
+    @Override
+    public String toString() {
+        return displayName;
+    }
+}
+
+//RoomStatus.java
+package model;
+
+public enum RoomStatus {
+    AVAILABLE("Available"),
+    OCCUPIED("Occupied"),
+    RESERVED("Reserved"),
+    MAINTENANCE("Under Maintenance"),
+    CLEANING("Being Cleaned");
+    
+    private final String displayStatus;
+    
+    RoomStatus(String displayStatus) {
+        this.displayStatus = displayStatus;
+    }
+    
+    public String getDisplayStatus() {
+        return displayStatus;
+    }
+    
+    @Override
+    public String toString() {
+        return displayStatus;
+    }
+}
+//Room.java
+package model;
+
+public class Room {
+    private int roomNumber;
+    private RoomType type;
+    private RoomStatus status;
+    private int floor;
+    private boolean hasMinibar;
+    private boolean hasWifi;
+    private boolean hasOceanView;
+    
+    public Room(int roomNumber, RoomType type) {
+        this.roomNumber = roomNumber;
+        this.type = type;
+        this.status = RoomStatus.AVAILABLE;
+        this.floor = roomNumber / 100;
+        
+        // Default amenities based on room type
+        this.hasWifi = true;
+        this.hasMinibar = type.ordinal() >= RoomType.DELUXE.ordinal();
+        this.hasOceanView = roomNumber % 2 == 0; // Even-numbered rooms have ocean view
+    }
+    
+    public int getRoomNumber() {
+        return roomNumber;
+    }
+    
+    public RoomType getType() {
+        return type;
+    }
+    
+    public RoomStatus getStatus() {
+        return status;
+    }
+    
+    public void setStatus(RoomStatus status) {
+        this.status = status;
+    }
+    
+    public int getFloor() {
+        return floor;
+    }
+    
+    public boolean isHasMinibar() {
+        return hasMinibar;
+    }
+    
+    public void setHasMinibar(boolean hasMinibar) {
+        this.hasMinibar = hasMinibar;
+    }
+    
+    public boolean isHasWifi() {
+        return hasWifi;
+    }
+    
+    public void setHasWifi(boolean hasWifi) {
+        this.hasWifi = hasWifi;
+    }
+    
+    public boolean isHasOceanView() {
+        return hasOceanView;
+    }
+    
+    public void setHasOceanView(boolean hasOceanView) {
+        this.hasOceanView = hasOceanView;
+    }
+    
+    public boolean isAvailable() {
+        return status == RoomStatus.AVAILABLE;
+    }
+    
+    public double getPrice() {
+        double price = type.getBasePrice();
+        if (hasOceanView) price += 50.0;
+        if (hasMinibar) price += 20.0;
+        
+        // Apply floor premium (higher floors cost more)
+        price += (floor - 1) * 10.0;
+        
+        return price;
+    }
+    
+    @Override
+    public String toString() {
+        return "Room " + roomNumber + " (" + type + ")";
+    }
+}
+//User.java
+package model;
+
+import java.util.Date;
+
+public class User {
+    private String username;
+    private String password;
+    private UserRole role;
+    private String fullName;
+    private String email;
+    private String phone;
+    private Date lastLogin;
+    
+    public User(String username, String password, UserRole role, String fullName, String email, String phone) {
+        this.username = username;
+        this.password = password;
+        this.role = role;
+        this.fullName = fullName;
+        this.email = email;
+        this.phone = phone;
+    }
+    
+    public String getUsername() {
+        return username;
+    }
+    
+    public String getPassword() {
+        return password;
+    }
+    
+    public UserRole getRole() {
+        return role;
+    }
+    
+    public String getFullName() {
+        return fullName;
+    }
+    
+    public String getEmail() {
+        return email;
+    }
+    
+    public String getPhone() {
+        return phone;
+    }
+    
+    public Date getLastLogin() {
+        return lastLogin;
+    }
+    
+    public void setLastLogin(Date lastLogin) {
+        this.lastLogin = lastLogin;
+    }
+    
+    public boolean isAdmin() {
+        return role == UserRole.ADMIN || role == UserRole.MANAGER;
+    }
+    
+    public boolean isGuest() {
+        return role == UserRole.GUEST;
+    }
+    
+    public boolean isStaff() {
+        return role == UserRole.STAFF;
+    }
+    
+    @Override
+    public String toString() {
+        return fullName + " (" + username + ")";
+    }
+}
+
+//UserRole.java
+package model;
+
+public enum UserRole {
+    ADMIN("System Administrator"),
+    MANAGER("Hotel Manager"),
+    STAFF("Hotel Staff"),
+    GUEST("Hotel Guest");
+    
+    private final String displayName;
+    
+    UserRole(String displayName) {
+        this.displayName = displayName;
+    }
+    
+    public String getDisplayName() {
+        return displayName;
+    }
+    
+    @Override
+    public String toString() {
+        return displayName;
+    }
+}
+//Guest.java
+package model;
+
+public class Guest {
+    private String name;
+    private String email;
+    private String phone;
+    private String address;
+    private String idNumber;
+    private String idType;
+    private boolean isVIP;
+    private int loyaltyPoints;
+    
+    public Guest(String name) {
+        this.name = name;
+        this.isVIP = false;
+        this.loyaltyPoints = 0;
+    }
+    
+    public Guest(String name, String email, String phone, String address, String idNumber, String idType) {
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+        this.address = address;
+        this.idNumber = idNumber;
+        this.idType = idType;
+        this.isVIP = false;
+        this.loyaltyPoints = 0;
+    }
+    
+    public String getName() {
+        return name;
+    }
+    
+    public String getEmail() {
+        return email;
+    }
+    
+    public void setEmail(String email) {
+        this.email = email;
+    }
+    
+    public String getPhone() {
+        return phone;
+    }
+    
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+    
+    public String getAddress() {
+        return address;
+    }
+    
+    public void setAddress(String address) {
+        this.address = address;
+    }
+    
+    public String getIdNumber() {
+        return idNumber;
+    }
+    
+    public String getIdType() {
+        return idType;
+    }
+    
+    public boolean isVIP() {
+        return isVIP;
+    }
+    
+    public void setVIP(boolean vip) {
+        isVIP = vip;
+    }
+    
+    public int getLoyaltyPoints() {
+        return loyaltyPoints;
+    }
+    
+    public void addLoyaltyPoints(int points) {
+        this.loyaltyPoints += points;
+        if (this.loyaltyPoints >= 1000) {
+            this.isVIP = true;
+        }
+    }
+    
+    @Override
+    public String toString() {
+        return name + (isVIP ? " (VIP)" : "");
+    }
+}
+
+//Booking.java
+package model;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+
+public class Booking {
+    private String bookingId;
+    private Room room;
+    private Guest guest;
+    private Date checkInDate;
+    private Date checkOutDate;
+    private double totalPrice;
+    private BookingStatus status;
+    private int numberOfGuests;
+    private List<ExtraService> extraServices;
+    private String specialRequests;
+    private PaymentStatus paymentStatus;
+    private User createdBy;
+    private Date creationDate;
+    
+    public Booking(Room room, Guest guest, Date checkInDate, Date checkOutDate, int numberOfGuests) {
+        this.bookingId = generateBookingId();
+        this.room = room;
+        this.guest = guest;
+        this.checkInDate = checkInDate;
+        this.checkOutDate = checkOutDate;
+        this.numberOfGuests = numberOfGuests;
+        this.status = BookingStatus.CONFIRMED;
+        this.extraServices = new ArrayList<>();
+        this.paymentStatus = PaymentStatus.PENDING;
+        this.creationDate = new Date();
+        
+        calculateTotalPrice();
+        room.setStatus(RoomStatus.RESERVED);
+    }
+    
+    private String generateBookingId() {
+        // Generate a unique booking ID combining current timestamp and a random UUID segment
+        return "BK-" + System.currentTimeMillis() % 10000 + "-" 
+               + UUID.randomUUID().toString().substring(0, 4).toUpperCase();
+    }
+    
+    public String getBookingId() {
+        return bookingId;
+    }
+    
+    public Room getRoom() {
+        return room;
+    }
+    
+    public Guest getGuest() {
+        return guest;
+    }
+    
+    public Date getCheckInDate() {
+        return checkInDate;
+    }
+    
+    public Date getCheckOutDate() {
+        return checkOutDate;
+    }
+    
+    public void setCheckOutDate(Date checkOutDate) {
+        this.checkOutDate = checkOutDate;
+        calculateTotalPrice();
+    }
+    
+    public double getTotalPrice() {
+        return totalPrice;
+    }
+    
+    public BookingStatus getStatus() {
+        return status;
+    }
+    
+    public void setStatus(BookingStatus status) {
+        this.status = status;
+        
+        // Update room status based on booking status
+        if (status == BookingStatus.CHECKED_IN) {
+            room.setStatus(RoomStatus.OCCUPIED);
+        } else if (status == BookingStatus.CHECKED_OUT || status == BookingStatus.CANCELLED) {
+            room.setStatus(RoomStatus.CLEANING);
+        } else if (status == BookingStatus.CONFIRMED) {
+            room.setStatus(RoomStatus.RESERVED);
+        }
+    }
+    
+    public int getNumberOfGuests() {
+        return numberOfGuests;
+    }
+    
+    public List<ExtraService> getExtraServices() {
+        return extraServices;
+    }
+    
+    public void addExtraService(ExtraService service) {
+        extraServices.add(service);
+        calculateTotalPrice();
+    }
+    
+    public String getSpecialRequests() {
+        return specialRequests;
+    }
+    
+    public void setSpecialRequests(String specialRequests) {
+        this.specialRequests = specialRequests;
+    }
+    
+    public PaymentStatus getPaymentStatus() {
+        return paymentStatus;
+    }
+    
+    public void setPaymentStatus(PaymentStatus paymentStatus) {
+        this.paymentStatus = paymentStatus;
+    }
+    
+    public User getCreatedBy() {
+        return createdBy;
+    }
+    
+    public void setCreatedBy(User createdBy) {
+        this.createdBy = createdBy;
+    }
+    
+    public Date getCreationDate() {
+        return creationDate;
+    }
+    
+    public int getStayDuration() {
+        long diff = checkOutDate.getTime() - checkInDate.getTime();
+        return (int) (diff / (1000 * 60 * 60 * 24)) + 1; // +1 to count both check-in and check-out days
+    }
+    
+    private void calculateTotalPrice() {
+        // Calculate number of nights
+        long diffInMillies = checkOutDate.getTime() - checkInDate.getTime();
+        int nights = (int) (diffInMillies / (1000 * 60 * 60 * 24));
+        if (nights < 1) nights = 1;
+        
+        // Base room price for all nights
+        double price = room.getPrice() * nights;
+        
+        // Add extra services
+        for (ExtraService service : extraServices) {
+            price += service.getPrice();
+        }
+        
+        // Apply VIP discount if applicable
+        if (guest.isVIP()) {
+            price = price * 0.9; // 10% discount for VIP
+        }
+        
+        this.totalPrice = price;
+    }
+    
+    public void cancelBooking() {
+        this.status = BookingStatus.CANCELLED;
+        room.setStatus(RoomStatus.AVAILABLE);
+    }
+}
+//BookingStatus.java
+package model;
+
+public enum BookingStatus {
+    CONFIRMED("Confirmed"),
+    CHECKED_IN("Checked In"),
+    CHECKED_OUT("Checked Out"),
+    CANCELLED("Cancelled"),
+    NO_SHOW("No Show");
+    
+    private final String displayStatus;
+    
+    BookingStatus(String displayStatus) {
+        this.displayStatus = displayStatus;
+    }
+    
+    public String getDisplayStatus() {
+        return displayStatus;
+    }
+    
+    @Override
+    public String toString() {
+        return displayStatus;
+    }
+}
+//PaymentStatus.java
+package model;
+
+public enum PaymentStatus {
+    PENDING("Pending"),
+    PAID("Paid"),
+    PARTIALLY_PAID("Partially Paid"),
+    REFUNDED("Refunded"),
+    FAILED("Failed");
+    
+    private final String displayStatus;
+    
+    PaymentStatus(String displayStatus) {
+        this.displayStatus = displayStatus;
+    }
+    
+    public String getDisplayStatus() {
+        return displayStatus;
+    }
+    
+    @Override
+    public String toString() {
+        return displayStatus;
+    }
+}
+//ExtraService.java
+package model;
+
+public class ExtraService {
+    private String name;
+    private double price;
+    private ServiceCategory category;
+    
+    public ExtraService(String name, double price, ServiceCategory category) {
+        this.name = name;
+        this.price = price;
+        this.category = category;
+    }
+    
+    public String getName() {
+        return name;
+    }
+    
+    public double getPrice() {
+        return price;
+    }
+    
+    public ServiceCategory getCategory() {
+        return category;
+    }
+    
+    @Override
+    public String toString() {
+        return name + " ($" + price + ")";
+    }
+}
+//ServiceCategory.java
+
+package model;
+
+public enum ServiceCategory {
+    FOOD_BEVERAGE("Food & Beverage"),
+    TRANSPORTATION("Transportation"),
+    SPA("Spa & Wellness"),
+    HOUSEKEEPING("Housekeeping"),
+    ENTERTAINMENT("Entertainment"),
+    BUSINESS("Business Services");
+    
+    private final String displayName;
+    
+    ServiceCategory(String displayName) {
+        this.displayName = displayName;
+    }
+    
+    public String getDisplayName() {
+        return displayName;
+    }
+    
+    @Override
+    public String toString() {
+        return displayName;
+    }
+}
+//HotelManager.java
+package manager;
+
+import model.*;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+public class HotelManager {
+    private static HotelManager instance;
+    private List<Room> rooms;
+    private List<Booking> bookings;
+    private Map<String, User> users;
+    private List<Guest> guests;
+    private List<ExtraService> availableServices;
+    private User currentUser;
+    
+    private HotelManager() {
+        initializeRooms();
+        initializeUsers();
+        initializeServices();
+        bookings = new ArrayList<>();
+        guests = new ArrayList<>();
+    }
+    
+    public static HotelManager getInstance() {
+        if (instance == null) {
+            instance = new HotelManager();
+        }
+        return instance;
+    }
+    
+    private void initializeRooms() {
+        rooms = new ArrayList<>();
+        
+        // Create 200 rooms across 5 floors (40 rooms per floor)
+        
+        // Floor 1 - Single Rooms (101-120) and Double Rooms (121-140)
+        for (int i = 101; i <= 120; i++) {
+            rooms.add(new Room(i, RoomType.SINGLE));
+        }
+        for (int i = 121; i <= 140; i++) {
+            rooms.add(new Room(i, RoomType.DOUBLE));
+        }
+        
+        // Floor 2 - Twin Rooms (201-220) and Deluxe Rooms (221-240)
+        for (int i = 201; i <= 220; i++) {
+            rooms.add(new Room(i, RoomType.TWIN));
+        }
+        for (int i = 221; i <= 240; i++) {
+            rooms.add(new Room(i, RoomType.DELUXE));
+        }
+        
+        // Floor 3 - Executive Rooms (301-340)
+        for (int i = 301; i <= 340; i++) {
+            rooms.add(new Room(i, RoomType.EXECUTIVE));
+        }
+        
+        // Floor 4 - Junior Suites (401-425) and Suites (426-440)
+        for (int i = 401; i <= 425; i++) {
+            rooms.add(new Room(i, RoomType.JUNIOR_SUITE));
+        }
+        for (int i = 426; i <= 440; i++) {
+            rooms.add(new Room(i, RoomType.SUITE));
+        }
+        
+        // Floor 5 - Exclusive Presidential Suites (501-510) and Special Suites (511-520)
+        for (int i = 501; i <= 510; i++) {
+            Room room = new Room(i, RoomType.PRESIDENTIAL_SUITE);
+            room.setHasMinibar(true);
+            room.setHasOceanView(true);
+            rooms.add(room);
+        }
+        for (int i = 511; i <= 520; i++) {
+            Room room = new Room(i, RoomType.SUITE);
+            room.setHasMinibar(true);
+            room.setHasOceanView(true);
+            rooms.add(room);
+        }
+        
+        // Set a few rooms to different statuses
+        rooms.get(0).setStatus(RoomStatus.MAINTENANCE);
+        rooms.get(10).setStatus(RoomStatus.CLEANING);
+    }
+    
+    private void initializeUsers() {
+        users = new HashMap<>();
+        // Admin users
+        users.put("admin", new User("admin", "admin123", UserRole.ADMIN, "System Administrator", "admin@hotel.com", "123-456-7890"));
+        users.put("manager", new User("manager", "manager123", UserRole.MANAGER, "Hotel Manager", "manager@hotel.com", "123-456-7891"));
+        
+        // Staff users
+        users.put("staff1", new User("staff1", "staff123", UserRole.STAFF, "Reception Staff", "staff1@hotel.com", "123-456-7892"));
+        users.put("staff2", new User("staff2", "staff123", UserRole.STAFF, "Housekeeping Staff", "staff2@hotel.com", "123-456-7893"));
+        
+        // Guest users
+        users.put("guest1", new User("guest1", "guestpass", UserRole.GUEST, "John Smith", "john@example.com", "123-456-7894"));
+        users.put("guest2", new User("guest2", "guestpass", UserRole.GUEST, "Jane Doe", "jane@example.com", "123-456-7895"));
+        
+        // Add some sample guests to the guest list
+        guests.add(new Guest("John Smith", "john@example.com", "123-456-7894", "123 Main St", "AB123456", "Passport"));
+        guests.add(new Guest("Jane Doe", "jane@example.com", "123-456-7895", "456 Oak St", "CD789012", "Driver's License"));
+        
+        // Create a VIP guest
+        Guest vipGuest = new Guest("Robert Johnson", "robert@example.com", "123-456-7896", "789 Pine St", "EF345678", "ID Card");
+        vipGuest.setVIP(true);
+        guests.add(vipGuest);
+    }
+    
+    private void initializeServices() {
+        availableServices = new ArrayList<>();
+        
+        // Food & Beverage services
+        availableServices.add(new ExtraService("Breakfast Buffet", 25.0, ServiceCategory.FOOD_BEVERAGE));
+        availableServices.add(new ExtraService("Room Service", 15.0, ServiceCategory.FOOD_BEVERAGE));
+        availableServices.add(new ExtraService("Mini Bar Refill", 50.0, ServiceCategory.FOOD_BEVERAGE));
+        availableServices.add(new ExtraService("Dinner Reservation", 10.0, ServiceCategory.FOOD_BEVERAGE));
+        
+        // Transportation services
+        availableServices.add(new ExtraService("Airport Transfer", 75.0, ServiceCategory.TRANSPORTATION));
+        availableServices.add(new ExtraService("Taxi Service", 30.0, ServiceCategory.TRANSPORTATION));
+        availableServices.add(new ExtraService("Car Rental", 120.0, ServiceCategory.TRANSPORTATION));
+        
+        // Spa services
+        availableServices.add(new ExtraService("Full Body Massage", 120.0, ServiceCategory.SPA));
+        availableServices.add(new ExtraService("Facial Treatment", 90.0, ServiceCategory.SPA));
+        availableServices.add(new ExtraService("Sauna Access", 35.0, ServiceCategory.SPA));
+        
+        // Housekeeping services
+        availableServices.add(new ExtraService("Extra Cleaning", 20.0, ServiceCategory.HOUSEKEEPING));
+        availableServices.add(new ExtraService("Laundry Service", 25.0, ServiceCategory.HOUSEKEEPING));
+        
+        // Entertainment services
+        availableServices.add(new ExtraService("Movie Package", 15.0, ServiceCategory.ENTERTAINMENT));
+        availableServices.add(new ExtraService("Tour Guide", 80.0, ServiceCategory.ENTERTAINMENT));
+        
+        // Business services
+        availableServices.add(new ExtraService("Conference Room", 200.0, ServiceCategory.BUSINESS));
+        availableServices.add(new ExtraService("Printing Services", 5.0, ServiceCategory.BUSINESS));
+        availableServices.add(new ExtraService("Business Center Access", 30.0, ServiceCategory.BUSINESS));
+    }
+    
+    public boolean login(String username, String password) {
+        User user = users.get(username);
+        if (user != null && user.getPassword().equals(password)) {
+            currentUser = user;
+            currentUser.setLastLogin(new Date());
+            return true;
+        }
+        return false;
+    }
+    
+    public User getCurrentUser() {
+        return currentUser;
+    }
+    
+    public List<Room> getRooms() {
+        return rooms;
+    }
+    
+    public List<Room> getAvailableRooms() {
+        return rooms.stream()
+            .filter(Room::isAvailable)
+            .collect(Collectors.toList());
+    }
+    
+    public List<Room> getRoomsByType(RoomType type) {
+        return rooms.stream()
+            .filter(room -> room.getType() == type)
+            .collect(Collectors.toList());
+    }
+    
+    public List<Room> getRoomsByFloor(int floor) {
+        return rooms.stream()
+            .filter(room -> room.getFloor() == floor)
+            .collect(Collectors.toList());
+    }
+    
+    public List<Room> searchRooms(RoomType type, boolean available, boolean hasMinibar, boolean hasOceanView) {
+        return rooms.stream()
+            .filter(room -> type == null || room.getType() == type)
+            .filter(room -> !available || room.isAvailable())
+            .filter(room -> !hasMinibar || room.isHasMinibar())
+            .filter(room -> !hasOceanView || room.isHasOceanView())
+            .collect(Collectors.toList());
+    }
+    
+    public List<Booking> getBookings() {
+        return bookings;
+    }
+    
+    public List<Booking> getCurrentBookings() {
+        return bookings.stream()
+            .filter(booking -> booking.getStatus() == BookingStatus.CONFIRMED || booking.getStatus() == BookingStatus.CHECKED_IN)
+            .collect(Collectors.toList());
+    }
+    
+    public List<Booking> getBookingsForGuest(Guest guest) {
+        return bookings.stream()
+            .filter(booking -> booking.getGuest().getName().equals(guest.getName()))
+            .collect(Collectors.toList());
+    }
+    
+    public List<Guest> getGuests() {
+        return guests;
+    }
+    
+    public List<ExtraService> getAvailableServices() {
+        return availableServices;
+    }
+    
+    public List<ExtraService> getServicesByCategory(ServiceCategory category) {
+        return availableServices.stream()
+            .filter(service -> service.getCategory() == category)
+            .collect(Collectors.toList());
+    }
+    
+    public Booking bookRoom(Room room, Guest guest, Date checkInDate, Date checkOutDate, int numberOfGuests) {
+        if (room.isAvailable()) {
+            Booking booking = new Booking(room, guest, checkInDate, checkOutDate, numberOfGuests);
+            booking.setCreatedBy(currentUser);
+            bookings.add(booking);
+            
+            // Add loyalty points for the guest (1 point per dollar spent)
+            guest.addLoyaltyPoints((int) booking.getTotalPrice());
+            
+            // Add guest to the guest list if not already there
+            if (!guests.contains(guest)) {
+                guests.add(guest);
+            }
+            
+            return booking;
+        }
+        return null;
+    }
+    
+    public void checkInGuest(Booking booking) {
+        booking.setStatus(BookingStatus.CHECKED_IN);
+    }
+    
+    public void checkOutGuest(Booking booking) {
+        booking.setStatus(BookingStatus.CHECKED_OUT);
+        // Schedule room for cleaning
+        booking.getRoom().setStatus(RoomStatus.CLEANING);
+    }
+    
+    public void cancelBooking(Booking booking) {
+        booking.cancelBooking();
+    }
+    
+    public void markRoomAsAvailable(Room room) {
+        room.setStatus(RoomStatus.AVAILABLE);
+    }
+    
+    public void markRoomForMaintenance(Room room) {
+        room.setStatus(RoomStatus.MAINTENANCE);
+    }
+    
+    public void markRoomAsClean(Room room) {
+        room.setStatus(RoomStatus.AVAILABLE);
+    }
+    
+    public Booking getBookingById(String bookingId) {
+        for (Booking booking : bookings) {
+            if (booking.getBookingId().equals(bookingId)) {
+                return booking;
+            }
+        }
+        return null;
+    }
+    
+    public Booking getBookingForRoom(Room room) {
+        for (Booking booking : bookings) {
+            if (booking.getRoom().getRoomNumber() == room.getRoomNumber() && 
+                (booking.getStatus() == BookingStatus.CONFIRMED || booking.getStatus() == BookingStatus.CHECKED_IN)) {
+                return booking;
+            }
+        }
+        return null;
+    }
+    
+    public void addExtraServiceToBooking(Booking booking, ExtraService service) {
+        booking.addExtraService(service);
+    }
+    
+    public Room getRoomByNumber(int roomNumber) {
+        for (Room room : rooms) {
+            if (room.getRoomNumber() == roomNumber) {
+                return room;
+            }
+        }
+        return null;
+    }
+    
+    public Guest findGuestByName(String name) {
+        for (Guest guest : guests) {
+            if (guest.getName().equalsIgnoreCase(name)) {
+                return guest;
+            }
+        }
+        return null;
+    }
+    
+    public Map<RoomType, Integer> getRoomTypeStatistics() {
+        Map<RoomType, Integer> stats = new HashMap<>();
+        for (RoomType type : RoomType.values()) {
+            stats.put(type, 0);
+        }
+        
+        for (Room room : rooms) {
+            RoomType type = room.getType();
+            stats.put(type, stats.get(type) + 1);
+        }
+        
+        return stats;
+    }
+    
+    public Map<RoomStatus, Integer> getRoomStatusStatistics() {
+        Map<RoomStatus, Integer> stats = new HashMap<>();
+        for (RoomStatus status : RoomStatus.values()) {
+            stats.put(status, 0);
+        }
+        
+        for (Room room : rooms) {
+            RoomStatus status = room.getStatus();
+            stats.put(status, stats.get(status) + 1);
+        }
+        
+        return stats;
+    }
+    
+    public double calculateTotalRevenue() {
+        return bookings.stream()
+            .filter(booking -> booking.getStatus() != BookingStatus.CANCELLED)
+            .mapToDouble(Booking::getTotalPrice)
+            .sum();
+    }
+}
+
+//gui
+//LoginScreen.java
+package gui;
+
+import manager.HotelManager;
+import model.User;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.Date;
+
+public class LoginScreen extends JFrame {
+    private JTextField usernameField;
+    private JPasswordField passwordField;
+    private JButton loginButton;
+    private JLabel statusLabel;
+    
+    public LoginScreen() {
+        setTitle("Luxury Hotel Management System - Login");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(400, 300);
+        setLocationRelativeTo(null);
+        
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BorderLayout(10, 10));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        
+        // Header
+        JLabel titleLabel = new JLabel("Luxury Hotel Management System", SwingConstants.CENTER);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        mainPanel.add(titleLabel, BorderLayout.NORTH);
+        
+        // Login form
+        JPanel formPanel = new JPanel();
+        formPanel.setLayout(new GridLayout(3, 2, 10, 10));
+        formPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
+        
+        formPanel.add(new JLabel("Username:"));
+        usernameField = new JTextField();
+        formPanel.add(usernameField);
+        
+        formPanel.add(new JLabel("Password:"));
+        passwordField = new JPasswordField();
+        formPanel.add(passwordField);
+        
+        formPanel.add(new JLabel(""));
+        
+        loginButton = new JButton("Login");
+        loginButton.addActionListener(e -> attemptLogin());
+        formPanel.add(loginButton);
+        
+        mainPanel.add(formPanel, BorderLayout.CENTER);
+        
+        // Status label
+        statusLabel = new JLabel("Enter your credentials to login", SwingConstants.CENTER);
+        statusLabel.setForeground(Color.DARK_GRAY);
+        mainPanel.add(statusLabel, BorderLayout.SOUTH);
+        
+        // Example credentials
+        JPanel infoPanel = new JPanel();
+        infoPanel.setLayout(new GridLayout(3, 1));
+        infoPanel.add(new JLabel("Admin: username 'admin', password 'admin123'", SwingConstants.CENTER));
+        infoPanel.add(new JLabel("Staff: username 'staff1', password 'staff123'", SwingConstants.CENTER));
+        infoPanel.add(new JLabel("Guest: username 'guest1', password 'guestpass'", SwingConstants.CENTER));
+        mainPanel.add(infoPanel, BorderLayout.NORTH);
+        
+        add(mainPanel);
+        
+        // Set default button for Enter key
+        getRootPane().setDefaultButton(loginButton);
+    }
+    
+    private void attemptLogin() {
+        String username = usernameField.getText();
+        String password = new String(passwordField.getPassword());
+        
+        if (username.isEmpty() || password.isEmpty()) {
+            statusLabel.setText("Please enter both username and password");
+            statusLabel.setForeground(Color.RED);
+            return;
+        }
+        
+        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        statusLabel.setText("Authenticating...");
+        
+        // Simulate short delay for login processing
+        new Timer(800, e -> {
+            if (HotelManager.getInstance().login(username, password)) {
+                User currentUser = HotelManager.getInstance().getCurrentUser();
+                statusLabel.setText("Login successful! Welcome, " + currentUser.getFullName());
+                statusLabel.setForeground(new Color(0, 128, 0));
+                
+                // Open appropriate dashboard
+                SwingUtilities.invokeLater(() -> {
+                    if (currentUser.isAdmin()) {
+                        new AdminDashboard().setVisible(true);
+                    } else if (currentUser.isStaff()) {
+                        new StaffDashboard().setVisible(true);
+                    } else {
+                        new GuestDashboard().setVisible(true);
+                    }
+                    dispose();
+                });
+            } else {
+                statusLabel.setText("Invalid username or password. Please try again.");
+                statusLabel.setForeground(Color.RED);
+                passwordField.setText("");
+            }
+            setCursor(Cursor.getDefaultCursor());
+        }).start();
+    }
+}
+//RoomPanel.java
+package gui;
+
+import manager.HotelManager;
+import model.Booking;
+import model.Room;
+import model.RoomStatus;
+
+import javax.swing.*;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
+import java.awt.*;
+import java.text.NumberFormat;
+import java.util.Currency;
+import java.util.Locale;
+
+public class RoomPanel extends JPanel {
+    private Room room;
+    private JButton actionButton;
+    private JLabel statusLabel;
+    private JLabel priceLabel;
+    private boolean isAdmin;
+    private Color availableColor = new Color(230, 250, 230);
+    private Color occupiedColor = new Color(250, 230, 230);
+    private Color reservedColor = new Color(250, 250, 220);
+    private Color maintenanceColor = new Color(220, 220, 220);
+    
+    public RoomPanel(Room room, boolean isAdmin) {
+        this.room = room;
+        this.isAdmin = isAdmin;
+        
+        setBorder(new CompoundBorder(
+            new LineBorder(Color.GRAY), 
+            new EmptyBorder(8, 8, 8, 8)
+        ));
+        setLayout(new BorderLayout(5, 5));
+        setPreferredSize(new Dimension(180, 120));
+        updateBackgroundColor();
+        
+        JPanel infoPanel = new JPanel();
+        infoPanel.setOpaque(false);
+        infoPanel.setLayout(new GridLayout(4, 1, 2, 2));
+        
+        JLabel roomLabel = new JLabel("Room " + room.getRoomNumber(), SwingConstants.CENTER);
+        roomLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        
+        JLabel typeLabel = new JLabel(room.getType().toString(), SwingConstants.CENTER);
+        
+        statusLabel = new JLabel(room.getStatus().toString(), SwingConstants.CENTER);
+        setStatusLabelColor();
+        
+        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.US);
+        priceLabel = new JLabel(currencyFormat.format(room.getPrice()) + "/night", SwingConstants.CENTER);
+        priceLabel.setFont(new Font("Arial", Font.BOLD, 12));
+        
+        infoPanel.add(roomLabel);
+        infoPanel.add(typeLabel);
+        infoPanel.add(statusLabel);
+        infoPanel.add(priceLabel);
+        
+        // Add amenities icons
+        JPanel amenitiesPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 0));
+        amenitiesPanel.setOpaque(false);
+        
+        if (room.isHasWifi()) {
+            JLabel wifiLabel = new JLabel("WiFi");
+            wifiLabel.setFont(new Font("Arial", Font.PLAIN, 10));
+            amenitiesPanel.add(wifiLabel);
+        }
+        
+        if (room.isHasMinibar()) {
+            JLabel minibarLabel = new JLabel("Minibar");
+            minibarLabel.setFont(new Font("Arial", Font.PLAIN, 10));
+            amenitiesPanel.add(minibarLabel);
+        }
+        
+        if (room.isHasOceanView()) {
+            JLabel viewLabel = new JLabel("Ocean View");
+            viewLabel.setFont(new Font("Arial", Font.PLAIN, 10));
+            amenitiesPanel.add(viewLabel);
+        }
+        
+        add(infoPanel, BorderLayout.CENTER);
+        add(amenitiesPanel, BorderLayout.NORTH);
+        
+        actionButton = new JButton();
+        updateButtonStatus();
+        actionButton.addActionListener(e -> handleAction());
+        
+        add(actionButton, BorderLayout.SOUTH);
+    }
+    
+    private void updateBackgroundColor() {
+        switch (room.getStatus()) {
+            case AVAILABLE:
+                setBackground(availableColor);
+                break;
+            case OCCUPIED:
+                setBackground(occupiedColor);
+                break;
+            case RESERVED:
+                setBackground(reservedColor);
+                break;
+            case MAINTENANCE:
+            case CLEANING:
+                setBackground(maintenanceColor);
+                break;
+        }
+    }
+    
+    private void setStatusLabelColor() {
+        switch (room.getStatus()) {
+            case AVAILABLE:
+                statusLabel.setForeground(new Color(0, 128, 0));
+                break;
+            case OCCUPIED:
+                statusLabel.setForeground(new Color(192, 0, 0));
+                break;
+            case RESERVED:
+                statusLabel.setForeground(new Color(128, 128, 0));
+                break;
+            case MAINTENANCE:
+            case CLEANING:
+                statusLabel.setForeground(Color.GRAY);
+                break;
+        }
+    }
+    
+    private void updateButtonStatus() {
+        if (room.getStatus() == RoomStatus.AVAILABLE) {
+            actionButton.setText("Book Room");
+            actionButton.setBackground(new Color(120, 200, 120));
+            actionButton.setEnabled(true);
+        } else if (room.getStatus() == RoomStatus.OCCUPIED && isAdmin) {
+            actionButton.setText("Check Out");
+            actionButton.setBackground(new Color(200, 120, 120));
+            actionButton.setEnabled(true);
+        } else if (room.getStatus() == RoomStatus.RESERVED && isAdmin) {
+            actionButton.setText("Check In");
+            actionButton.setBackground(new Color(200, 200, 120));
+            actionButton.setEnabled(true);
+        } else if (room.getStatus() == RoomStatus.MAINTENANCE && isAdmin) {
+            actionButton.setText("Mark Available");
+            actionButton.setBackground(new Color(150, 150, 150));
+            actionButton.setEnabled(true);
+        } else if (room.getStatus() == RoomStatus.CLEANING && isAdmin) {
+            actionButton.setText("Mark Clean");
+            actionButton.setBackground(new Color(150, 150, 200));
+            actionButton.setEnabled(true);
+        } else {
+            if (room.getStatus() == RoomStatus.OCCUPIED) {
+                actionButton.setText("Occupied");
+            } else if (room.getStatus() == RoomStatus.RESERVED) {
+                actionButton.setText("Reserved");
+            } else {
+                actionButton.setText(room.getStatus().toString());
+            }
+            actionButton.setBackground(new Color(200, 200, 200));
+            actionButton.setEnabled(false);
+        }
+    }
+    
+    private void handleAction() {
+        switch (room.getStatus()) {
+            case AVAILABLE:
+                // Book room
+                BookingDialog dialog = new BookingDialog(SwingUtilities.getWindowAncestor(this), room);
+                dialog.setVisible(true);
+                break;
+                
+            case OCCUPIED:
+                if (isAdmin) {
+                    // Check out guest
+                    Booking booking = HotelManager.getInstance().getBookingForRoom(room);
+                    if (booking != null) {
+                        int option = JOptionPane.showConfirmDialog(
+                            this, 
+                            "Check out guest " + booking.getGuest().getName() + " from Room " + room.getRoomNumber() + "?", 
+                            "Confirm Check Out", 
+                            JOptionPane.YES_NO_OPTION
+                        );
+                        if (option == JOptionPane.YES_OPTION) {
+                            HotelManager.getInstance().checkOutGuest(booking);
+                            JOptionPane.showMessageDialog(this, "Room " + room.getRoomNumber() + " has been checked out.", "Check Out Successful", JOptionPane.INFORMATION_MESSAGE);
+                        }
+                    }
+                }
+                break;
+                
+            case RESERVED:
+                if (isAdmin) {
+                    // Check in guest
+                    Booking booking = HotelManager.getInstance().getBookingForRoom(room);
+                    if (booking != null) {
+                        int option = JOptionPane.showConfirmDialog(
+                            this, 
+                            "Check in guest " + booking.getGuest().getName() + " to Room " + room.getRoomNumber() + "?", 
+                            "Confirm Check In", 
+                            JOptionPane.YES_NO_OPTION
+                        );
+                        if (option == JOptionPane.YES_OPTION) {
+                            HotelManager.getInstance().checkInGuest(booking);
+                            JOptionPane.showMessageDialog(this, "Guest checked in successfully.", "Check In Successful", JOptionPane.INFORMATION_MESSAGE);
+                        }
+                    }
+                }
+                break;
+                
+            case MAINTENANCE:
+                if (isAdmin) {
+                    HotelManager.getInstance().markRoomAsAvailable(room);
+                }
+                break;
+                
+            case CLEANING:
+                if (isAdmin) {
+                    HotelManager.getInstance().markRoomAsClean(room);
+                }
+                break;
+        }
+        
+        refresh();
+    }
+    
+    public void refresh() {
+        statusLabel.setText(room.getStatus().toString());
+        setStatusLabelColor();
+        updateButtonStatus();
+        updateBackgroundColor();
+    }
+}
+//BookingDialog.java
+package gui;
+
+import manager.HotelManager;
+import model.*;
+
+import javax.swing.*;
+import javax.swing.border.TitledBorder;
+import java.awt.*;
